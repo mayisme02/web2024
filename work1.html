@@ -8,6 +8,13 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+    }
+
     .quiz-item {
       border: 1px solid #cccccc;
       border-radius: 8px;
@@ -18,17 +25,51 @@
     .quiz-item:first-child {
       margin-top: 0; /* ลบระยะห่างด้านบนของข้อแรก */
     }
+
+    /* กำหนดสีม่วงให้กับหัวข้อ */
+    .bg-primary-custom {
+      background-color: #9375d6 !important; /* ใช้สีม่วงสำหรับพื้นหลัง */
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: white;
+    }
+
+    /* ปรับแต่งปุ่มเริ่มต้น */
+    .btn-start {
+      background-color: #9375d6; /* สีม่วงเข้ม */
+      color: white;
+      font-size: 1.2rem;
+      padding: 15px 30px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-start:hover {
+      background-color: #ab87f8; /* สีม่วงเข้มขึ้นเมื่อ hover */
+    }
+
+    /* ปรับแต่งปุ่มตรวจคำตอบ */
+    .btn-success {
+      background-color: #28a745;
+      font-size: 1rem;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+    }
   </style>
 </head>
 <body>
 
-<div class="container-fluid p-5 bg-primary text-white text-center">
+<div class="container-fluid p-5 bg-primary-custom text-white text-center">
   <h1>แบบทดสอบ เข้าม.1</h1>
 </div>
   
 <div class="container mt-5">
   <div class="row justify-content-center" id="startBox">
-    <button class="btn btn-primary btn-lg" id="btnStart">เริ่มทำแบบทดสอบ</button>
+    <button class="btn btn-start btn-lg" id="btnStart">เริ่มทำแบบทดสอบ</button>
   </div>
   <div class="row mt-5" id="quizBox">
     <div class="col-md-8 mx-auto">
@@ -46,91 +87,90 @@
 </div>
 
 <script>
-    $(function(){
-      $("#quizBox").hide();
-      $("#btnStart").click(function(){
-         $("#startBox").hide();
-         $("#quizBox").show();
-         displayQuizList();
-      });
-  
-      $("#btnCheckAnswer").click(function(){
-         checkAnswers();
-      });
+  $(function(){
+    $("#quizBox").hide();
+    $("#btnStart").click(function(){
+       $("#startBox").hide();
+       $("#quizBox").show();
+       displayQuizList();
     });
-  
-    function displayQuizList(){
-      $("#quizListBox").html("");
-      for(var i in quizlist){
-        displayQuiz(i, quizlist[i]);
-      }
+
+    $("#btnCheckAnswer").click(function(){
+       checkAnswers();
+    });
+  });
+
+  function displayQuizList(){
+    $("#quizListBox").html("");
+    for(var i in quizlist){
+      displayQuiz(i, quizlist[i]);
     }
-  
-    function displayQuiz(i, q){
-      var no = parseInt(i) + 1;
+  }
+
+  function displayQuiz(i, q){
+    var no = parseInt(i) + 1;
+    $("#quizListBox").append(
+      `<div class="quiz-item" id="quiz${no}">
+        <h5>ข้อที่ ${no}: ${q.title}</h5>
+        <div class="ps-3">`
+    );
+    for (var c in q.options) {
+      var v = parseInt(c) + 1;
       $("#quizListBox").append(
-        `<div class="quiz-item" id="quiz${no}">
-          <h5>ข้อที่ ${no}: ${q.title}</h5>
-          <div class="ps-3">`
+        `<div class="form-check">
+          <input class="form-check-input" type="radio" name="q${no}" value="${v}" id="q${no}_${v}">
+          <label class="form-check-label" for="q${no}_${v}">
+            ${v}. ${q.options[c]}
+          </label>
+        </div>`
       );
-      for (var c in q.options) {
-        var v = parseInt(c) + 1;
-        $("#quizListBox").append(
-          `<div class="form-check">
-            <input class="form-check-input" type="radio" name="q${no}" value="${v}" id="q${no}_${v}">
-            <label class="form-check-label" for="q${no}_${v}">
-              ${v}. ${q.options[c]}
-            </label>
-          </div>`
-        );
-      }
-      $("#quizListBox").append(`</div></div>`);
     }
-  
-    function checkAnswers() {
-      for (var i in quizlist) {
-        var no = parseInt(i) + 1;
-        var correctAnswer = quizlist[i].answer;
-        var userAnswer = $(`input[name="q${no}"]:checked`).val();
-  
-        if (userAnswer == correctAnswer) {
-          $(`#quiz${no}`).css("border", "2px solid green");
-          $(`#quiz${no}`).append(`<div class="text-success mt-2">คำตอบของคุณ: ถูกต้อง</div>`);
-        } else {
-          $(`#quiz${no}`).css("border", "2px solid red");
-          $(`#quiz${no}`).append(`<div class="text-danger mt-2">คำตอบของคุณ: ผิด</div>`);
-        }
+    $("#quizListBox").append(`</div></div>`);
+  }
+
+  function checkAnswers() {
+    for (var i in quizlist) {
+      var no = parseInt(i) + 1;
+      var correctAnswer = quizlist[i].answer;
+      var userAnswer = $(`input[name="q${no}"]:checked`).val();
+
+      if (userAnswer == correctAnswer) {
+        $(`#quiz${no}`).css("border", "2px solid green");
+        $(`#quiz${no}`).append(`<div class="text-success mt-2">คำตอบของคุณ: ถูกต้อง</div>`);
+      } else {
+        $(`#quiz${no}`).css("border", "2px solid red");
+        $(`#quiz${no}`).append(`<div class="text-danger mt-2">คำตอบของคุณ: ผิด</div>`);
       }
-  
-      // ปิดปุ่มหลังตรวจคำตอบ
-      $("#btnCheckAnswer").prop("disabled", true);
     }
-  
-    var quizlist = [
-      {
-          "title": "ลำธารไหลผ่านหมู่บ้านแห่งหนึ่ง เป็นลำธารที่สำคัญที่ช่วยหล่อเลี้ยงชีวิตของผู้คนในหมู่บ้าน ลำธารมีสีน้ำที่ใสสะอาด จนสามารถสังเกตเห็นก้อนกรวดใต้ลำธารได้ชัดเจน ภายในลำธารพบสิ่งมีชีวิตมากมาย ไม่ว่าจะเป็นปลาหลากชนิดที่แหวกว่าย เหงือกขยับคอยรับออกซิเจนจากน้ำ บ้างก็หลบอยู่ใต้หินเพื่อรอเหยื่อ หอยน้ำจืดหลากสีที่กำลังคืบคลานหาอาหารริมลำธาร ตัวอ่อนแมลงปอที่อำพลางตัวจนกลมกลืนกับพืชน้ำเพื่อหลบผู้ล่า <br>คำว่า ลำธาร ในข้อความมีความสอดคล้องข้อใดมากที่สุด",
-          "options": [
-              "ประชากร",
-              "แหล่งที่อยู่",
-              "ชีวภูมิภาค",
-              "ระบบนิเวศ",
-              "กลุ่มสิ่งมีชีวิต"
-          ],
-          "answer": 4
-      },
-      {
-          "title": "10+15=?",
-          "options": [
-              "15",
-              "20",
-              "25",
-              "30",
-              "35"
-          ],
-          "answer": 3
-      }
-    ];
-  </script>
-  
+
+    // ปิดปุ่มหลังตรวจคำตอบ
+    $("#btnCheckAnswer").prop("disabled", true);
+  }
+
+  var quizlist = [
+    {
+        "title": "ลำธารไหลผ่านหมู่บ้านแห่งหนึ่ง เป็นลำธารที่สำคัญที่ช่วยหล่อเลี้ยงชีวิตของผู้คนในหมู่บ้าน ลำธารมีสีน้ำที่ใสสะอาด จนสามารถสังเกตเห็นก้อนกรวดใต้ลำธารได้ชัดเจน ภายในลำธารพบสิ่งมีชีวิตมากมาย ไม่ว่าจะเป็นปลาหลากชนิดที่แหวกว่าย เหงือกขยับคอยรับออกซิเจนจากน้ำ บ้างก็หลบอยู่ใต้หินเพื่อรอเหยื่อ หอยน้ำจืดหลากสีที่กำลังคืบคลานหาอาหารริมลำธาร ตัวอ่อนแมลงปอที่อำพลางตัวจนกลมกลืนกับพืชน้ำเพื่อหลบผู้ล่า <br>คำว่า ลำธาร ในข้อความมีความสอดคล้องข้อใดมากที่สุด",
+        "options": [
+            "ประชากร",
+            "แหล่งที่อยู่",
+            "ชีวภูมิภาค",
+            "ระบบนิเวศ",
+            "กลุ่มสิ่งมีชีวิต"
+        ],
+        "answer": 4
+    },
+    {
+        "title": "10+15=?",
+        "options": [
+            "15",
+            "20",
+            "25",
+            "30",
+            "35"
+        ],
+        "answer": 3
+    }
+  ];
+</script>
 </body>
 </html>
