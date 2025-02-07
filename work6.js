@@ -9,7 +9,7 @@ class App extends React.Component {
     );
     footer = (
       <div>
-        By xxxxxxxxxx-x xxxxxxxxxxxxx xxxxxxxxxxxxxx <br />
+        By 653380323-8 มณิฐชญาณ์ ธมนันท์พงษา <br />
         College of Computing, Khon Kaen University
       </div>
     );
